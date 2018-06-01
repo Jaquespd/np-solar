@@ -31,6 +31,7 @@ Tracker.autorun(() => {
 
 Meteor.startup(() => {
   Session.set('selectedNoteId', undefined);
+  Session.set('selectedBudgetId', undefined);
   Session.set('isNavOpen', false);
   Session.set('showVisible', true);
   ReactDOM.render(routes, document.getElementById('app'));

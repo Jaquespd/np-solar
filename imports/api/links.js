@@ -12,18 +12,28 @@ if (Meteor.isServer) {
 }
 
 Meteor.methods({
-  'links.insert'(url) {
+  'links.insert'(name, phone, email) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
 
     new SimpleSchema({
-      url: {
+      name: {
         type: String,
         label: 'Your name',
         min: 1
+      },
+      phone: {
+        type: String,
+        label: 'Your phone',
+        regEx: SimpleSchema.RegEx.Phone
+      },
+      email: {
+        type: String,
+        label: 'Your email',
+        regEx: SimpleSchema.RegEx.Email
       }
-    }).validate({ url });
+    }).validate({ name, phone, email });
 
     Links.insert({
       _id: shortid.generate(),
@@ -31,7 +41,9 @@ Meteor.methods({
       visible: true,
       visitedCount: 0,
       lastVisitedAt: new Date().getTime(),
-      url,
+      name,
+      phone,
+      email,
       eletricalData: false,
       consumption: null,
       input: null,
