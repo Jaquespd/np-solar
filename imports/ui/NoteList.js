@@ -7,10 +7,12 @@ import { Notes } from '../api/notes';
 import NoteListHeader from './NoteListHeader';
 import NoteListItem from './NoteListItem';
 import NoteListEmptyItem from './NoteListEmptyItem';
+import MenuBar from './MenuBar';
 
 export const NoteList = (props) => {
   return (
     <div className="item-list">
+      <MenuBar/>
       <NoteListHeader/>
       { props.notes.length === 0 ? <NoteListEmptyItem/> : undefined }
       {props.notes.map((note) => {

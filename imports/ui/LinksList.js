@@ -5,13 +5,15 @@ import { Session } from 'meteor/session';
 import FlipMove from 'react-flip-move';
 
 import { Links } from '../api/links';
+import { Kits } from '../api/kits';
 import LinksListItem from './LinksListItem';
 
 export default class LinksList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      links: []
+      links: [],
+      kits: []
     };
   }
   componentDidMount() {
@@ -23,10 +25,19 @@ export default class LinksList extends React.Component {
       }).fetch();
       this.setState({ links });
     });
+    this.kitsTracker = Tracker.autorun(() => {
+      Meteor.subscribe('kits');
+      const kits = Kits.find({
+        // visible: Session.get('showVisible')
+      }).fetch();
+      this.setState({ kits });
+    });
+
   }
   componentWillUnmount() {
     console.log('componentWillUnmount LinksList');
     this.linksTracker.stop();
+    this.kitsTracker.stop();
   }
   renderLinksListItems() {
     if (this.state.links.length === 0) {

@@ -7,7 +7,9 @@ export const Kits = new Mongo.Collection('kits');
 
 if (Meteor.isServer) {
   Meteor.publish('kits', function () {
-    return Kits.find({ userId: this.userId });
+    return Kits.find({
+      availability: true
+    });
   });
 }
 

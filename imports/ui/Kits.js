@@ -1,11 +1,8 @@
 import React from 'react';
 
 import PrivateHeader from './PrivateHeader';
-import MenuBar from './MenuBar';
-// import NoteList from './NoteList';
-import Editor from './Editor';
-import Budget from './Budget';
-import Link from './Link';
+import NoteList from './NoteList';
+// import Link from './Link';
 
 export default () => {
   return (
@@ -13,13 +10,10 @@ export default () => {
       <PrivateHeader title="Natal Projetos"/>
       <div className="page-content">
         <div className="page-content__sidebar">
-          {/* Abaixo era o NoteList */}
-          <MenuBar/>
+          <NoteList/>
         </div>
         <div className="page-content__main">
-          <Link/>
-          {/* <Editor/> */}
-          {/* <Budget/> */}
+          <p>Kits component here</p>
         </div>
       </div>
     </div>

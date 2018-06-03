@@ -4,6 +4,7 @@ import Modal from 'react-modal';
 import moment from 'moment';
 import { Session } from 'meteor/session';
 
+import { Kits } from '../api/kits';
 
 export default class LinksListItem extends React.Component {
   constructor(props) {
@@ -15,8 +16,8 @@ export default class LinksListItem extends React.Component {
       input: '',
       streetLighting: '',
       energyPrice:'',
-      budgetOpen: false
-      // kit: []
+      budgetOpen: false,
+      kits: []
     };
   }
   onSubmit(e) {
@@ -37,9 +38,18 @@ export default class LinksListItem extends React.Component {
   }
   componentDidMount() {
     // TODO fazer traker, subscribe in colection, set state kits
+    console.log('componentDidMount LinksListItems');
+    this.kitsTracker = Tracker.autorun(() => {
+      Meteor.subscribe('kits');
+      const kits = Kits.find({
+        availability: true
+      }).fetch();
+      this.setState({ kits });
+    });
   }
   componentWillUnmount() {
     // TODO stop tracker
+    this.kitsTracker.stop();
   }
   onChangeConsumption(e) {
     this.setState({
@@ -69,6 +79,18 @@ export default class LinksListItem extends React.Component {
       input: '',
       streetLighting: '',
       energyPrice:''
+    });
+  }
+  addKit() {
+
+
+    // 'kits.insert'(power, code, price, numberPanels, area, inverterBrand) {
+    Meteor.call('kits.insert', {power:'5'}, {code: '54478'}, {price: "2500"}, {numberPanels: "5"}, {area: '8'}, {inverterBrand: 'Xing'}, (err, res) => {
+      if (!err) {
+        console.log('Erro ao adicionar os kits');
+      } else {
+        this.setState({ error: err.reason });
+      }
     });
   }
   renderStats() {
@@ -114,6 +136,7 @@ export default class LinksListItem extends React.Component {
      console.log(this.state.budgetOpen);
   }
   genPower() {
+    // this.addKit();
     let calc = 0;
     const rateAvailability = this.props.input === "Monofásica" ? 15 : 100;
     calc = (this.props.consumption / 12 - rateAvailability) / 166 / 0.8;
@@ -122,7 +145,7 @@ export default class LinksListItem extends React.Component {
   }
   renderBudget() {
     return (
-      <div>
+      <div className="testPage">
         <div>
           <p>Dados Elétricos</p>
           <p>Consumo: {this.props.consumption} kWh p/ano, {this.props.consumption / 12} kWh p/mês</p>
