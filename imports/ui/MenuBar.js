@@ -5,7 +5,6 @@ import { Session } from 'meteor/session';
 
 
 const MenuBar = (props) => {
-  console.log(props.selectedMenu);
   return (
     <div className="item-list">
       <p>Barra de Menu</p>

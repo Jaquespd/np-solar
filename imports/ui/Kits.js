@@ -1,21 +1,30 @@
 import React from 'react';
 
-import PrivateHeader from './PrivateHeader';
-import NoteList from './NoteList';
-// import Link from './Link';
+import { createContainer } from 'meteor/react-meteor-data';
+import { Session } from 'meteor/session';
 
-export default () => {
+import AddKits from './AddKits';
+import KitsList from './KitsList';
+import KitsListFilters from './KitsListFilters';
+
+const Kits = (props) => {
   return (
-    <div>
-      <PrivateHeader title="Natal Projetos"/>
-      <div className="page-content">
-        <div className="page-content__sidebar">
-          <NoteList/>
-        </div>
-        <div className="page-content__main">
-          <p>Kits component here</p>
-        </div>
-      </div>
+    <div className={props.selectedMenu === 'kits' ? 'budget' : 'budget budget__toggle'}>
+        <KitsListFilters/>
+        <AddKits/>
+        <KitsList/>
     </div>
   );
 };
+
+Kits.propTypes = {
+  selectedMenu: React.PropTypes.string.isRequired
+};
+
+export default createContainer(() => {
+  const selectedMenu = Session.get('selectedMenu');
+
+  return {
+    selectedMenu
+  };
+}, Kits);

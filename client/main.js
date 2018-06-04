@@ -16,6 +16,7 @@ Tracker.autorun(() => {
 
 Tracker.autorun(() => {
   const selectedNoteId = Session.get('selectedNoteId');
+  const selectedMenu = Session.get('selectedMenu');
   Session.set('isNavOpen', false);
 
   if (selectedNoteId) {
@@ -32,8 +33,9 @@ Tracker.autorun(() => {
 Meteor.startup(() => {
   Session.set('selectedNoteId', undefined);
   Session.set('selectedBudgetId', undefined);
-  Session.set('selectedMenu', 'budget');
+  Session.set('selectedMenu', 'kits');
   Session.set('isNavOpen', false);
   Session.set('showVisible', true);
+  Session.set('showAvailability', true);
   ReactDOM.render(routes, document.getElementById('app'));
 });

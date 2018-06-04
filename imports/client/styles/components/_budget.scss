@@ -7,6 +7,10 @@
   width: 100%;
 }
 
+.budget__toggle {
+  display: none;
+}
+
 .budget__title {
   border: none;
   border-bottom: 2px solid $grey;

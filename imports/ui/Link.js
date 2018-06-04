@@ -4,25 +4,14 @@ import LinksList from './LinksList';
 import AddLink from './AddLink';
 import LinksListFilters from './LinksListFilters';
 
-// import { Links } from '../api/links';
-// import FlipMove from 'react-flip-move';
+import { createContainer } from 'meteor/react-meteor-data';
+import { Session } from 'meteor/session';
 
-export default class Link extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modeBudget: false
-    };
-  }
-  componentDidMount() {
-    console.log('componentDidMount Link');
-  }
-  componentWillUnmount() {
-    console.log('componentWillUnmount Link');
-  }
+
+export class Link extends React.Component {
   render() {
     return (
-      <div className="budget">
+      <div className={this.props.selectedMenu === 'budget' ? 'budget' : 'budget budget__toggle'}>
         <LinksListFilters/>
         <AddLink/>
         <LinksList/>
@@ -30,3 +19,15 @@ export default class Link extends React.Component {
     );
   }
 };
+
+Link.propTypes = {
+  selectedMenu: React.PropTypes.string.isRequired
+};
+
+export default createContainer(() => {
+  const selectedMenu = Session.get('selectedMenu');
+
+  return {
+    selectedMenu
+  };
+}, Link);

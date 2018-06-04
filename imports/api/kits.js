@@ -8,7 +8,8 @@ export const Kits = new Mongo.Collection('kits');
 if (Meteor.isServer) {
   Meteor.publish('kits', function () {
     return Kits.find({
-      availability: true
+      // availability: true
+      // TODO FAZER A LOGICA PARA USER E ADMIN
     });
   });
 }
@@ -95,6 +96,28 @@ Meteor.methods({
         availability: false,
         dateSoldOut: moment().valueOf()
       }
+    });
+  },
+  'kits.setAvailability'(_id, availability) {
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized');
+    }
+
+    new SimpleSchema({
+      _id: {
+        type: String,
+        min: 1
+      },
+      availability: {
+        type: Boolean
+      }
+    }).validate({ _id, availability });
+
+    Kits.update({
+      _id,
+      userId: this.userId
+    }, {
+      $set: { availability }
     });
   }
 });

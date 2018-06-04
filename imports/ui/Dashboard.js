@@ -6,6 +6,8 @@ import MenuBar from './MenuBar';
 import Editor from './Editor';
 import Budget from './Budget';
 import Link from './Link';
+import Profile from './Profile';
+import Kits from './Kits';
 
 export default () => {
   return (
@@ -18,6 +20,8 @@ export default () => {
         </div>
         <div className="page-content__main">
           <Link/>
+          <Profile/>
+          <Kits/>
           {/* <Editor/> */}
           {/* <Budget/> */}
         </div>
