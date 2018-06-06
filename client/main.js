@@ -33,7 +33,7 @@ Tracker.autorun(() => {
 Meteor.startup(() => {
   Session.set('selectedNoteId', undefined);
   Session.set('selectedBudgetId', undefined);
-  Session.set('selectedMenu', 'kits');
+  Session.set('selectedMenu', 'profile');
   Session.set('isNavOpen', false);
   Session.set('showVisible', true);
   Session.set('showAvailability', true);

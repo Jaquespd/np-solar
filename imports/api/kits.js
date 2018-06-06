@@ -49,7 +49,7 @@ Meteor.methods({
 
     return Kits.insert({
       userId: this.userId,
-      power,
+      power: parseFloat(power),
       code,
       price,
       numberPanels,

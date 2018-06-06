@@ -33,7 +33,7 @@ a {
   color: $body-default-color;
 }
 
-input[type=text], input[type=email], input[type=password], input[type=tel], input[type=email], textarea {
+input[type=text], input[type=email], input[type=password], input[type=tel], input[type=email], input[type=number], textarea, select {
   border: 1px solid $input-border;
   color: $body-default-color;
   font-size: $base-font-size;

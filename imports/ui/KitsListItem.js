@@ -14,17 +14,18 @@ export default class KitsListItem extends React.Component {
   }
   renderStats() {
     if (typeof this.props.registrationDate === 'number') {
-      registrationMessage = `(create ${ moment(this.props.registrationDate).fromNow() })`;
+      registrationMessage = `(cadastrado a ${ moment(this.props.registrationDate).fromNow() })`;
     }
 
-    return <p className="item__message">{this.props.registrationMessage}</p>;
+    return <p className="subitem__message">{registrationMessage}</p>;
   }
   render() {
     return (
       <div className="subitem">
-        <h2>Potencia: {this.props.power}</h2>
-        <p className="subitem__message">Codigo: {this.props.code}, Marca do Inversor: {this.props.inverterBrand}</p>
-        {/* {this.renderStats()} */}
+        <h2>Kit Gerador: {this.props.power} kWp</h2>
+        <p className="subitem__message">Preço: R$ {this.props.price}, Marca do Inversor: {this.props.inverterBrand}</p>
+        <p className="subitem__message">N. Paineis: {this.props.numberPanels} placas, Area: {this.props.area} m², Codigo: {this.props.code}</p>
+        {this.renderStats()}
         <button className="button button--pill" onClick={() => {
           Meteor.call('kits.setAvailability', this.props._id, !this.props.availability);
         }}>

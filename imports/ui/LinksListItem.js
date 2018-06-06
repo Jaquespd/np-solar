@@ -13,11 +13,14 @@ export default class LinksListItem extends React.Component {
       isOpen: false,
       error: '',
       consumption: '',
-      input: '',
+      input: 'Monofásica',
       streetLighting: '',
       energyPrice:'',
       budgetOpen: false,
-      kits: []
+      kits: [],
+      selectKit: undefined,
+      showResult: false,
+      teste: {}
     };
   }
   onSubmit(e) {
@@ -38,11 +41,14 @@ export default class LinksListItem extends React.Component {
   }
   componentDidMount() {
     // TODO fazer traker, subscribe in colection, set state kits
-    console.log('componentDidMount LinksListItems');
     this.kitsTracker = Tracker.autorun(() => {
       Meteor.subscribe('kits');
       const kits = Kits.find({
         availability: true
+      },{
+        sort: {
+          power: 1
+        }
       }).fetch();
       this.setState({ kits });
     });
@@ -71,6 +77,11 @@ export default class LinksListItem extends React.Component {
       energyPrice: e.target.value
     });
   }
+  onChangeSelectKit(e) {
+    this.setState({
+      selectKit: e.target.value
+    });
+  }
   handleModalClose() {
     this.setState({
       isOpen: false,
@@ -81,27 +92,12 @@ export default class LinksListItem extends React.Component {
       energyPrice:''
     });
   }
-  addKit() {
-
-
-    // 'kits.insert'(power, code, price, numberPanels, area, inverterBrand) {
-    Meteor.call('kits.insert', {power:'5'}, {code: '54478'}, {price: "2500"}, {numberPanels: "5"}, {area: '8'}, {inverterBrand: 'Xing'}, (err, res) => {
-      if (!err) {
-        console.log('Erro ao adicionar os kits');
-      } else {
-        this.setState({ error: err.reason });
-      }
-    });
-  }
   renderStats() {
-    const visitMessage = this.props.visitedCount === 1 ? 'visit' : 'visits';
-    let visitedMessage = null;
-
     if (typeof this.props.lastVisitedAt === 'number') {
-      visitedMessage = `(create ${ moment(this.props.lastVisitedAt).fromNow() })`;
+      visitedMessage = `(criado a ${ moment(this.props.lastVisitedAt).fromNow() })`;
     }
 
-    return <p className="item__message">{this.props.visitedCount} {visitMessage} {visitedMessage}</p>;
+    return <p className="item__message">{visitedMessage}</p>;
   }
   genBudget() {
     // Tenho Consumo, tipo de entrada, iluminacao publica e preco da energia
@@ -133,55 +129,81 @@ export default class LinksListItem extends React.Component {
 
      Session.set('selectedBudgetId',this.props._id);
      this.setState({budgetOpen: true});
-     console.log(this.state.budgetOpen);
   }
   genPower() {
-    // this.addKit();
     let calc = 0;
     const rateAvailability = this.props.input === "Monofásica" ? 15 : 100;
     calc = (this.props.consumption / 12 - rateAvailability) / 166 / 0.8;
     const powerGenerator = parseFloat(calc.toFixed(1));
     return powerGenerator;
   }
+  onSubmitKit(e) {
+
+    e.preventDefault();
+    // TODO fazer func gerar orçamento
+    console.log('select:', this.state.selectKit);
+    if (!this.state.selectKit) {
+      console.log('Não houve selecao');
+      this.setState({showResult: false});
+      return;
+    } else {
+      this.setState({
+        teste: Kits.findOne({
+          _id: this.state.selectKit
+        })
+      });
+      this.setState({showResult: true});
+    }
+  }
+  render2() {
+    if (this.state.kits.length === 0) {
+      return (
+        <div>
+          <select className="button button--pill">
+            <option>Não há kits disponiveis</option>
+          </select>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <form onSubmit={this.onSubmitKit.bind(this)}>
+          <select className="button button--pill" onChange={this.onChangeSelectKit.bind(this)}>
+            <option value="">Escolher Gerador</option>
+            {this.state.kits.map((kit) => {
+              return (
+                <option value={kit._id} key={kit._id}>{kit.power} kWp</option>
+              );
+            })}
+          </select>
+          <input className="button button--pill" type="submit" value="Confirmar" />
+        </form>
+
+      </div>
+    );
+  }
+  renderResult() {
+    return (
+      <div>
+        <p>Resultado</p>
+        <p>Potencia do Gerador: {this.state.teste.power} kWp.</p>
+        <p>Valor do Gerador: R$ {this.state.teste.price} reais.</p>
+        <p>Numero de Paineis: {this.state.teste.numberPanels} unidades.</p>
+        <p>Area de Instalação: {this.state.teste.area} m²</p>
+        <p>Previsão da Conta de Luz: R$ 10,00 reais.</p>
+        <p>Tempo de retorno: 4,5 anos</p>
+        <p>Economia mensal: R$ 200,00 reais</p>
+        <p>Economia Anual: R$ 2.500,00 reais</p>
+        <p>Economia 25 anos: R$ 22.500,00 reais</p>
+      </div>
+    );
+  }
   renderBudget() {
     return (
       <div className="testPage">
         <div>
-          <p>Dados Elétricos</p>
-          <p>Consumo: {this.props.consumption} kWh p/ano, {this.props.consumption / 12} kWh p/mês</p>
-          <p>Entrada: {this.props.input}.</p>
-          <p>Potencia Necessaria: {this.genPower()} kWp.</p>
-          <p>Iluminação Pública: R$ {this.props.streetLighting} reais.</p>
-          <p>Valor do kWh: R$ {this.props.energyPrice}.</p>
-        </div>
-        <button className="button button--pill" onClick={()=>this.setState({budgetOpen:false})}>Escolher Gerador</button>
-        <div>
-          <p>Resultado</p>
-          <p>Potencia do Gerador: 3.9 kWp.</p>
-          <p>Valor do Gerador: R$ 12.000,00 reais, equivalente a R$ 4.500,00 reais p/ kWp</p>
-          <p>Numero de Paineis: 14 de 275W ou 10 de 330W.</p>
-          <p>Area de Instalação: 24 m²</p>
-          <p>Previsão da Conta de Luz: R$ 10,00 reais.</p>
-          <p>Tempo de retorno: 4,5 anos</p>
-          <p>Economia mensal: R$ 200,00 reais</p>
-          <p>Economia Anual: R$ 2.500,00 reais</p>
-          <p>Economia 25 anos: R$ 22.500,00 reais</p>
-        </div>
-        <div>
-          <p>Observações</p>
-          <p>Aumento do dolar...</p>
-        </div>
-      </div>
-    );
-  }
-  render() {
-    return (
-      <div>
-        <div className="subitem">
-          <h2>Nome: {this.props.name}</h2>
-          <p className="subitem__message">Celular: {this.props.phone}, Email: {this.props.email}</p>
-          {this.renderStats()}
-          <button className="button button--pill" onClick={() => this.setState({isOpen: true})}>Config</button>
+          <button className="button button--pill" onClick={() => this.setState({isOpen: true})}>Add/Alt Dados Elétricos</button>
           <Modal
             isOpen={this.state.isOpen}
             contentLabel="Add eletricalData"
@@ -199,13 +221,11 @@ export default class LinksListItem extends React.Component {
                     value={this.state.consumption}
                     onChange={this.onChangeConsumption.bind(this)}
                   />
-                  <input
-                    type="text"
-                    placeholder="ENTRADA"
-                    ref="input"
-                    value={this.state.input}
-                    onChange={this.onChangeInput.bind(this)}
-                  />
+                  <select onChange={this.onChangeInput.bind(this)}>
+                    <option value="">Tipo de Entrada</option>
+                    <option value="Monofásica">Monofásica</option>
+                    <option value="Trifásica">Trifásica</option>
+                  </select>
                   <input
                     type="text"
                     placeholder="iluminacao Publica"
@@ -224,8 +244,33 @@ export default class LinksListItem extends React.Component {
                 <button type="button" className="button button--secondary" onClick={this.handleModalClose.bind(this)}>Cancelar</button>
             </form>
           </Modal>
-          <button className="button button--pill" onClick={() => {this.genBudget()}}>Gerar</button>
-          <button className="button button--pill">Enviar</button>
+          {this.props.eletricalData ? this.renderEletricalData() : undefined}
+        </div>
+        {this.props.eletricalData ? this.render2() : undefined}
+        {this.state.showResult ? this.renderResult() : undefined}
+      </div>
+    );
+  }
+  renderEletricalData() {
+    return (
+      <div>
+        <p>Consumo: {this.props.consumption} kWh p/ano, {this.props.consumption / 12} kWh p/mês</p>
+        <p>Entrada: {this.props.input}.</p>
+        <p>Potencia Necessaria: {this.genPower()} kWp.</p>
+        <p>Iluminação Pública: R$ {this.props.streetLighting} reais.</p>
+        <p>Valor do kWh: R$ {this.props.energyPrice}.</p>
+      </div>
+    );
+  }
+  render() {
+    return (
+      <div>
+        <div className="subitem">
+          <h2>Nome: {this.props.name}</h2>
+          <p className="subitem__message">Celular: {this.props.phone}, Email: {this.props.email}</p>
+          {this.renderStats()}
+          <button className="button button--pill" onClick={() => {this.setState({budgetOpen: !this.state.budgetOpen})}}>{this.state.budgetOpen ? 'Esconder' : 'Mostrar'}</button>
+          {/* <button className="button button--pill">Enviar</button> */}
           <button className="button button--pill" onClick={() => {
             Meteor.call('links.setVisibility', this.props._id, !this.props.visible);
           }}>
