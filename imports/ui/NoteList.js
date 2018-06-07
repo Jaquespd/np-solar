@@ -42,5 +42,6 @@ export default createContainer(() => {
         selected: note._id === selectedNoteId
       };
     })
+    console.log('teste');
   };
 }, NoteList);
