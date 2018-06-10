@@ -9,6 +9,7 @@ import NotFound from '../ui/NotFound';
 import Login from '../ui/Login';
 import Kits from '../ui/Kits';
 
+
 const onEnterNotePage = (nextState) => {
   Session.set('selectedNoteId', nextState.params.id);
 };

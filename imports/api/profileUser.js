@@ -2,16 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-export const Profile = new Mongo.Collection('profile');
+export const ProfileUser = new Mongo.Collection('profileUser');
 
 if (Meteor.isServer) {
-  Meteor.publish('profile', function () {
-    return Profile.find({ userId: this.userId });
+  Meteor.publish('profileUser', function () {
+    return ProfileUser.find({ userId: this.userId });
   });
 }
 
 Meteor.methods({
-  'profile.insert'(name, cpf, phone, email, commissionKwp, limitCommissionKwp, commissionProject) {
+  'profileUser.insert'(name, cpf, phone, email, commissionKwp, limitCommissionKwp, commissionProject) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -54,7 +54,7 @@ Meteor.methods({
       }
     }).validate({ name, cpf, phone, email, commissionKwp, limitCommissionKwp, commissionProject });
 
-    Profile.insert({
+    ProfileUser.insert({
       userId: this.userId,
       name,
       cpf,
@@ -69,7 +69,7 @@ Meteor.methods({
       budgetSend: 0
     });
   },
-  'profile.updateCommission'(_id, commissionKwp, limitCommissionKwp, commissionProject) {
+  'profileUser.updateCommission'(_id, commissionKwp, limitCommissionKwp, commissionProject) {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
@@ -92,7 +92,7 @@ Meteor.methods({
       }
     }).validate({ _id, commissionKwp, limitCommissionKwp, commissionProject });
 
-    Profile.update({ _id }, {
+    ProfileUser.update({ _id }, {
       $set: {
         commissionKwp,
         limitCommissionKwp,
@@ -100,7 +100,7 @@ Meteor.methods({
       }
     })
   },
-  'profile.incBudgetMade'(_id) {
+  'profileUser.incBudgetMade'(_id) {
     new SimpleSchema({
       _id: {
         type: String,
@@ -108,13 +108,13 @@ Meteor.methods({
       }
     }).validate({ _id });
 
-    Profile.update({ _id }, {
+    ProfileUser.update({ _id }, {
       $inc: {
         budgetMade: 1
       }
     })
   },
-  'profile.decBudgetMade'(_id) {
+  'profileUser.decBudgetMade'(_id) {
     new SimpleSchema({
       _id: {
         type: String,
@@ -122,13 +122,13 @@ Meteor.methods({
       }
     }).validate({ _id });
 
-    Profile.update({ _id }, {
+    ProfileUser.update({ _id }, {
       $inc: {
         budgetMade: -1
       }
     })
   },
-  'profile.incBudgetActive'(_id) {
+  'profileUser.incBudgetActive'(_id) {
     new SimpleSchema({
       _id: {
         type: String,
@@ -136,13 +136,13 @@ Meteor.methods({
       }
     }).validate({ _id });
 
-    Profile.update({ _id }, {
+    ProfileUser.update({ _id }, {
       $inc: {
         budgetActive: 1
       }
     })
   },
-  'profile.decBudgetActive'(_id) {
+  'profileUser.decBudgetActive'(_id) {
     new SimpleSchema({
       _id: {
         type: String,
@@ -150,13 +150,13 @@ Meteor.methods({
       }
     }).validate({ _id });
 
-    Profile.update({ _id }, {
+    ProfileUser.update({ _id }, {
       $inc: {
         budgetActive: -1
       }
     })
   },
-  'profile.incBudgetSend'(_id) {
+  'profileUser.incBudgetSend'(_id) {
     new SimpleSchema({
       _id: {
         type: String,
@@ -164,13 +164,13 @@ Meteor.methods({
       }
     }).validate({ _id });
 
-    Profile.update({ _id }, {
+    ProfileUser.update({ _id }, {
       $inc: {
         budgetSend: 1
       }
     })
   },
-  'profile.decBudgetSend'(_id) {
+  'profileUser.decBudgetSend'(_id) {
     new SimpleSchema({
       _id: {
         type: String,
@@ -178,7 +178,7 @@ Meteor.methods({
       }
     }).validate({ _id });
 
-    Profile.update({ _id }, {
+    ProfileUser.update({ _id }, {
       $inc: {
         budgetSend: -1
       }
